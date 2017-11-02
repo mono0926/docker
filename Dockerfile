@@ -18,11 +18,8 @@ RUN apt-get update && \
 # コンテナのタイムゾーンがデフォルトでUTCになっているので、ホストOSの/etc/localtimeを読み込み専用でマウント
 VOLUME /etc/localtime:/etc/localtime:ro
 
-# そのままapt-getでインストールするとパスワードを聞かれる箇所で止まってしまうので、予め設定しておく。この例ではパスワードは「password」。
 RUN apt-get update && \
-    echo "mysql-server mysql-server/root_password password password" | debconf-set-selections && \
-    echo "mysql-server mysql-server/root_password_again password password" | debconf-set-selections && \
-    apt-get -y install mysql-server
+    DEBIAN_FRONTEND=noninteractive apt-get -y install mysql-server
 
 # デフォルトの文字コードをUTF-8に設定
 RUN sed -i -e "s/\(\[mysqld\]\)/\1\ncharacter-set-server = utf8/g" /etc/mysql/my.cnf
